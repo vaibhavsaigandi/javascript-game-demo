@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Rocket</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="javascript" src=""></script>
+</head>
+
+<body onkeydown='getKeyAndMove(event)'>
+    <div class="container">
+        <div id="full">
+            <div id="rocketfull">
+                <div id="rocket">
+                    <div class="top"></div>
+                    <div class="middle"></div>
+                    <div class="bottom"></div>
+                    <div class="fire1"></div>
+                    <div class="fire2"></div>
+                    <div class="left-wing"></div>
+                    <div class="right-wing"></div>
+                    <!-- Bullets/bombs -->
+                    <div id="bullets">
+                        <div class="b-1"></div>
+                        <!-- <div class="b-2"></div>
+                        <div class="b-3"></div>
+                        <div class="b-4"></div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- person_cartoon_character -->
+        <div id="person">
+            <div class="face">
+                <div class="left-eyebrow"></div>
+                <div class="right-eyebrow"></div>
+                <div class="left-eye"></div>
+                <div class="right-eye"></div>
+                <div class="nose"></div>
+                <div class="mouth"></div>
+                <div class="left-ear"></div>
+                <div class="right-ear"></div>
+                <div class="hair1"></div>
+            </div>
+            <div class="pb"></div>
+            <div class="left-hand"></div>
+            <div class="right-hand"></div>
+            <div class="left-leg"></div>
+            <div class="right-leg"></div>
+        </div>
+        <div>
+            <img class="cloud1" src="images/cloud.png">
+            <img class="cloud3" src="images/cloud.png">
+            <img class="cloud4" src="images/cloud.png">
+        </div>
+
+    </div>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script>
+        // rocket moving code
+
+        function moveleft() {
+            var elem = document.getElementById("rocketfull");
+            var pos = 0;
+            var id = setInterval(frame, 1);
+
+            function frame() {
+                if (bulletStatus) {
+                    if (pos == 1390) {
+                        clearInterval(id);
+                        moveRight();
+                    } else {
+                        pos++;
+                        elem.style.right = pos + "px";
+                        elem.style.left = pos + "px";
+                    }
+                }
+            }
+
+            function moveRight() {
+                var elem = document.getElementById("rocketfull");
+                var pos = 1390;
+                var id = setInterval(frame, 1);
+
+                function frame() {
+                    if (bulletStatus) {
+                        if (pos == 0) {
+                            clearInterval(id);
+                            moveleft();
+                        } else {
+                            pos--;
+                            elem.style.right = pos + "px";
+                            elem.style.left = pos + "px";
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+        // bullets moving code
+
+        function moveDown() {
+
+            var elem = document.getElementById("bullets");
+            var pos = 0;
+            var id = setInterval(frame, 0.01);
+
+            function frame() {
+                if (pos == -450) {
+                    clearInterval(id);
+                    elem.style.visibility = 'visible';
+                    moveDown();
+                } else {
+                    pos--;
+                    elem.style.top = pos + "px";
+                    elem.style.bottom = pos + "px";
+                }
+
+            }
+        }
+
+        var objImage = null;
+        var gametimer = 0;
+
+        function gamecounter() {
+            for (i = 1; i <= 3; i++) {
+                gametimer = gametimer + 1;
+            }
+
+        }
+
+        function init() {
+            objImage = document.getElementById('person');
+            objImage.style.position = 'absolute';
+            objImage.style.left = '50%';
+            objImage.style.top = '63%';
+        }
+        // person moving code
+        function getKeyAndMove(e) {
+
+            var key_code = e.which || e.keyCode;
+            switch (key_code) {
+                case 37: //left arrow key
+                    moveLeft();
+                    break;
+                    // case 38: //Up arrow key
+                    //     moveUp();
+                    //     break;
+                case 39: //right arrow key
+                    moveRight();
+                    break;
+                    // case 40: //down arrow key
+                    //     moveDown();
+                    //     break;
+            }
+        }
+
+        function moveLeft() {
+            objImage.style.left = parseInt(objImage.style.left) - 20 + 'px';
+        }
+
+        // function moveUp() {
+        //     objImage.style.top = parseInt(objImage.style.top) - 10 + 'px';
+        // }
+
+        function moveRight() {
+            objImage.style.left = parseInt(objImage.style.left) + 20 + 'px';
+        }
+
+        // function moveDown() {
+        //     objImage.style.top = parseInt(objImage.style.top) + 10 + 'px';
+        // }
+        window.onload = init();
+        window.onload = moveleft();
+        window.onload = gamecounter();
+        window.onload = moveDown();
+        var bulletStatus = true;
+        setInterval(collide, 1);
+        // collision code
+        function collide() {
+            if (bulletStatus) {
+                var bulletId = $("#bullets");
+                var personId = $("#person");
+                isCollision = false;
+                var isCollision = collision(bulletId, personId);
+                console.log(isCollision);
+                if (isCollision) {
+                    //alert("Gave Over!");
+                    console.log(isCollision);
+                    bulletStatus = false;
+                    alert("game over");
+                    //e.preventDefault();
+                }
+            }
+        }
+
+        function collision($div1, $div2) {
+            var x1 = $div1.offset().left;
+            var y1 = $div1.offset().top;
+            var h1 = $div1.outerHeight(true);
+            var w1 = $div1.outerWidth(true);
+            var b1 = y1 + h1;
+            var r1 = x1 + w1;
+            var x2 = $div2.offset().left;
+            var y2 = $div2.offset().top;
+            var h2 = $div2.outerHeight(true);
+            var w2 = $div2.outerWidth(true);
+            var b2 = y2 + h2;
+            var r2 = x2 + w2;
+            console.log(b1 + " " + y2 + ", " + y1 + " " + b2 + ", " + r1 + " " + x2 + ", " + x1 + " " + r2)
+            if ((b1 < y2 - 100 || y1 - 100 > b2)) {
+                if (r1 < x2 + 100 || x1 - 100 > r2) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
+    </script>
+</body>
+
+</html>
